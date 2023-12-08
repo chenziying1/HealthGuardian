@@ -9,6 +9,7 @@ import base64
 import hashlib
 from datetime import datetime, timedelta
 import mysql.connector
+import requests
 from cryptography.fernet import Fernet
 from flask import Flask, render_template, request, redirect, url_for, jsonify, make_response
 from werkzeug.security import generate_password_hash, check_password_hash
@@ -1256,7 +1257,17 @@ def ys_xgmm():
 
     return render_template('医生_修改密码.html')
 
-@app.route('/hz_zy')
+def predict_medical_cost(data):
+    url = "http://127.0.0.1:5011/calculate" # 定义目标 URL
+    response = requests.post(url, json=data) # 发送 POST 请求
+    if response.status_code == 200:
+        result = response.json() # 解析响应数据
+        ans = result["预测的医疗费用"]
+    else:
+        ans = 0
+    return ans
+
+@app.route('/hz_zy', methods=['GET', 'POST'])
 def hz():
     patient_name = request.cookies.get('patient_name')
     connection = get_mysql_connection()
@@ -1282,6 +1293,19 @@ def hz():
 
     data_points = [15339, 21345, 18483, 24003, 23489, 24092, 12034]
     labels = ['good day', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']
+
+    if request.method == 'POST':
+        data = {
+            'age': float(request.form['age']),
+            'sex': float(request.form['sex']),
+            'bmi': float(request.form['bmi']),
+            'children': float(request.form['children']),
+            'smoker': float(request.form['smoker']),
+            'region': float(request.form['region'])
+        }
+
+        prediction_result = predict_medical_cost(data)
+        return render_template('hz_zy.html', data_points=data_points, labels=labels,prediction_result=int(prediction_result))
     return render_template('hz_zy.html', data_points=data_points, labels=labels)
 
 @app.route('/hz_xgmm', methods=['GET', 'POST'])

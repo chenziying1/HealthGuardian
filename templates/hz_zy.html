@@ -4,6 +4,55 @@
     <title>My Flask App</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.3.0/css/bootstrap.min.css">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/index.css') }}">
+    <!-- 在Bootstrap JS之前引入jQuery -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+
+    <style>
+          .floating-button {
+              position: fixed;
+              bottom: 20px;
+              right: 20px;
+              width: 50px;
+              height: 50px;
+              border-radius: 50%;
+              background-color: #007bff;
+              color: #fff;
+              text-align: center;
+              line-height: 50px;
+              cursor: pointer;
+          }
+
+
+        .container2 {
+            background-color: #fff;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+            margin: 20px auto;
+            max-width: 600px;
+            padding: 20px;
+        }
+
+
+        .form-group label {
+            font-weight: bold;
+        }
+
+        .btn-primary {
+            background-color: #007BFF;
+            border: none;
+        }
+
+        .btn-primary:hover {
+            background-color: #0056b3;
+        }
+
+        .result {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+    </style>
 </head>
 
 
@@ -83,6 +132,75 @@
       </div>
     </div>
 
+    <!-- Floating button -->
+    <div class="floating-button" data-bs-toggle="modal" data-bs-target="#myModal">+</div>
+
+    <!-- Modal -->
+    <div class="modal fade" id="myModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">医疗费用预测</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="container2">
+                        <form method="POST">
+                            <div class="form-group">
+                                <label for="age">年龄:</label>
+                                <input type="number" class="form-control" id="age" name="age" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="sex">性别:</label>
+                                <select class="form-control" id="sex" name="sex" required>
+                                    <option value="1">Male</option>
+                                    <option value="0">Female</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="bmi">体重指数(BMI):</label>
+                                <input type="number" step="0.01" class="form-control" id="bmi" name="bmi" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="children">子女人数:</label>
+                                <input type="number" class="form-control" id="children" name="children" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="smoker">是否为吸烟者:</label>
+                                <select class="form-control" id="smoker" name="smoker" required>
+                                    <option value="1">Yes</option>
+                                    <option value="0">No</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="region">来自:</label>
+                                <input type="number" class="form-control" id="region" name="region" required>
+                            </div>
+                            <button type="submit" class="btn btn-primary btn-block">开始预测</button>
+                        </form>
+                </div>
+                {% if prediction_result %}
+                    <div class="result">
+                        <h2>预测结果为:</h2>
+                        <p>${{ prediction_result }}人民币</p>
+                    </div>
+                {% endif %}
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">关闭</button>
+                    <button type="button" class="btn btn-primary">保存</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        $(document).ready(function () {
+            // Show the modal when the floating button is clicked
+            $('.floating-button').click(function () {
+                $('#myModal').modal('show');
+            });
+        });
+    </script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="{{ url_for('static', filename='js/bootstrap.bundle.min.js') }}" integrity="sha384-/mhDoLbDldZc3qpsJHpLogda//BVZbgYuw6kof4u2FrCedxOtgRZDTHgHUhOCVim" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/feather-icons@4.28.0/dist/feather.min.js" integrity="sha384-uO3SXW5IuS1ZpFPKugNNWqTZRRglnUJK6UAZ/gxOX80nxEkN9NcGZTftn6RzhGWE" crossorigin="anonymous"></script>
